@@ -23,6 +23,7 @@ export interface Team {
   is_banned?: boolean;
   session_paused_at?: number | null;
   paused_duration?: number;
+  points?: number;
 }
 
 export interface Puzzle {
@@ -68,7 +69,9 @@ const DEFAULT_DB: Database = {
     {
       team_id: 'TEAM01',
       team_name: 'Alpha Team',
-      password_hash: bcrypt.hashSync('password', 10)
+      password_hash: bcrypt.hashSync('password', 10),
+      is_banned: false,
+      points: 0
     }
   ],
   puzzles: [],

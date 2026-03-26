@@ -5,7 +5,10 @@ CREATE TABLE teams (
   team_id TEXT PRIMARY KEY,
   team_name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
-  is_banned BOOLEAN DEFAULT FALSE
+  is_banned BOOLEAN DEFAULT FALSE,
+  session_paused_at BIGINT,
+  paused_duration BIGINT DEFAULT 0,
+  points INTEGER DEFAULT 0
 );
 
 -- Puzzles Table

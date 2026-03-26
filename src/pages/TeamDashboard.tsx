@@ -35,7 +35,7 @@ export default function TeamDashboard() {
   const { teamId, teamName, teamToken, logoutTeam } = useAuthStore();
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
   const [assignment, setAssignment] = useState<Assignment | null>(null);
-  const [stats, setStats] = useState({ solved: 0, attempts: 0 });
+  const [stats, setStats] = useState({ solved: 0, attempts: 0, points: 0 });
   const [lifeline, setLifeline] = useState({ lifeline_remaining: 3, lifeline_used: 0 });
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(true);
@@ -183,7 +183,11 @@ export default function TeamDashboard() {
       if (response.ok) {
         setCurrentPuzzle(data.puzzle);
         setAssignment(data.assignment);
-        setStats(data.stats);
+        setStats({
+          solved: data.stats.solved,
+          attempts: data.stats.attempts,
+          points: data.points || 0
+        });
         setLifeline(data.lifeline);
         setSessionEndTime(data.sessionEndTime);
         setIsPaused(data.isPaused);
@@ -539,6 +543,15 @@ export default function TeamDashboard() {
                 <div>
                   <p className="text-[10px] text-[#444] uppercase tracking-widest">Attempts</p>
                   <p className="text-lg font-bold">{stats.attempts}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-blue-500/5 border border-blue-500/20 rounded flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-[#444] uppercase tracking-widest">Score</p>
+                  <p className="text-lg font-bold">{stats.points}</p>
                 </div>
               </div>
               <div className="pt-4 border-t border-[#222]">

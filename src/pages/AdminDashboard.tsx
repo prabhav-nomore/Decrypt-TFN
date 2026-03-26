@@ -79,7 +79,7 @@ export default function AdminDashboard() {
       if (response.ok) {
         const processedTeams = data.map((t: any) => ({
           ...t,
-          points: (t.solved_count || 0) * 10
+          points: t.points !== undefined ? t.points : (t.solved_count || 0) * 1
         })).sort((a: any, b: any) => (b.points || 0) - (a.points || 0));
         setTeams(processedTeams);
       }

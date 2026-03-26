@@ -152,7 +152,7 @@ router.post('/admin/register-team', async (req, res) => {
     return res.status(400).json({ error: 'Team ID already exists' });
   }
 
-  const newTeam = { team_id: teamId, team_name: teamName, password_hash: passwordHash };
+  const newTeam = { team_id: teamId, team_name: teamName, password_hash: passwordHash, is_banned: false, points: 0 };
   db.teams.push(newTeam);
   
   if (supabase) {
@@ -361,7 +361,8 @@ router.get('/team/status', async (req, res) => {
     lifeline,
     sessionEndTime,
     isPaused,
-    pausedAt: team?.session_paused_at
+    pausedAt: team?.session_paused_at,
+    points: team?.points || 0
   });
 });
 
@@ -415,8 +416,16 @@ router.post('/submit', async (req, res) => {
     const assignment = db.assignments.find(a => a.team_id === teamId && a.puzzle_id === puzzleId && a.status === 'active');
     if (assignment) assignment.status = 'completed';
     
+    const team = db.teams.find(t => t.team_id === teamId);
+    if (team) {
+      team.points = (team.points || 0) + 1;
+    }
+
     if (supabase) {
       await supabase.from('assignments').update({ status: 'completed' }).eq('team_id', teamId).eq('puzzle_id', puzzleId);
+      if (team) {
+        await supabase.from('teams').update({ points: team.points }).eq('team_id', teamId);
+      }
     }
   }
 
