@@ -286,6 +286,10 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
           const readmeMdPath = path.join(fullPath, 'README.md');
           const readmeTxtPath = path.join(fullPath, 'README.txt');
           const solutionPath = path.join(fullPath, 'solution.txt');
+          const organizerSolutionPath = path.join(fullPath, 'organizer_solution.txt');
+          const solutionsTxtPath = path.join(fullPath, 'solutions.txt');
+          const verifierPath = path.join(fullPath, 'verifier.py');
+          const verifierAutoPath = path.join(fullPath, 'verifier_auto.py');
           
           let text = '';
           if (await fs.pathExists(readmeMdPath)) {
@@ -296,8 +300,29 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
 
           if (text) {
             let answer = 'password'; // Default for preview
+            
+            // Try to find the answer in various files
             if (await fs.pathExists(solutionPath)) {
               answer = (await fs.readFile(solutionPath, 'utf-8')).trim();
+            } else if (await fs.pathExists(organizerSolutionPath)) {
+              answer = (await fs.readFile(organizerSolutionPath, 'utf-8')).trim();
+            } else if (await fs.pathExists(solutionsTxtPath)) {
+              answer = (await fs.readFile(solutionsTxtPath, 'utf-8')).trim();
+            } else if (await fs.pathExists(verifierPath)) {
+              const verifierContent = await fs.readFile(verifierPath, 'utf-8');
+              const match = verifierContent.match(/SECRET\s*=\s*["']([^"']+)["']/);
+              if (match) {
+                answer = match[1];
+              }
+            } else if (await fs.pathExists(verifierAutoPath)) {
+               // For maze puzzles, the answer is often the encoded moves or just a placeholder
+               // We'll use a placeholder for now or try to extract correct_moves
+               const verifierContent = await fs.readFile(verifierAutoPath, 'utf-8');
+               const match = verifierContent.match(/correct_moves\s*=\s*\[([^\]]+)\]/);
+               if (match) {
+                 // Convert ['R', 'R'] to R,R
+                 answer = match[1].replace(/['"\s]/g, '');
+               }
             }
             
             let type = 'Mixed / Meta';
@@ -313,6 +338,7 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
             else if (lowerDir.includes('forensic')) type = 'Forensics';
             else if (lowerDir.includes('audio')) type = 'Audio / Spectrogram';
             else if (lowerDir.includes('binary') || lowerDir.includes('bitwise')) type = 'Binary / Bitwise';
+            else if (lowerDir.includes('maze')) type = 'Maze / Pathfinding';
             
             // Detect HTML Inspection
             const indexHtmlPath = path.join(fullPath, 'index.html');

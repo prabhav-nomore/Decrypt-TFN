@@ -1,0 +1,16 @@
+Solutions (organizer reference) — Puzzle 408
+
+Working files:
+- index.html links to pages/results.html (loads instantly, no error).
+
+Edit to make:
+  <a href="pages/results.html">View Results</a>
+  -> <a href="pages/slow-results.html">View Results</a>
+
+Result: Server sleeps 3 seconds then responds HTTP 408 with "Clue: 408".
+Also visible in DevTools -> Network tab as status 408.
+
+Organizer tip:
+- The 3-second delay is intentional — it sells the "timeout" narrative.
+- You can increase the sleep duration in run_server.py to raise tension.
+- Warn participants the page will be slow before they get frustrated and refresh.

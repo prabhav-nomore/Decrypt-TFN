@@ -1,0 +1,1 @@
+Dx2, Rx2, Ux2, Rx2, Dx2, Rx2, Ux2, Rx4, Dx2, Lx2, Dx2, Rx4, Ux4, Rx4, Dx2, Lx2, Dx2, Rx2, Dx10, Rx2, Ux12, Rx2, Dx16, Lx6, Ux4, Lx2, Ux2, Rx2, Ux2, Lx2, Ux2, Rx2, Ux2, Lx8, Dx4, Rx4, Dx2, Lx6, Ux2, Lx2, Ux6, Lx2, Dx8, Rx2, Dx4, Rx2, Ux2, Rx4, Dx2, Lx2, Dx4, Rx2, Ux2, Rx2, Ux2, Rx2, Dx4, Rx8

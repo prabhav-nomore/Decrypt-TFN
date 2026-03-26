@@ -1,0 +1,22 @@
+Solutions (organizer reference) — Puzzle 301
+
+Working files:
+- index.html links to pages/archive.html (loads normally, no redirect).
+
+Example single-line edit participants should make:
+1) Change link href:
+   <a href="pages/archive.html">Visit Archive</a>
+   -> <a href="pages/old-archive.html">Visit Archive</a>
+
+   Clicking the link sends GET /pages/old-archive.html to the server.
+   The server responds with HTTP 301 + Location: /pages/archive.html.
+   Browser follows redirect to the real page.
+   DevTools Network tab shows the 301 on the first request row.
+   The response body also contains "Clue: 301".
+
+Organizer tip:
+- Run with python3 run_server.py (port 8001).
+- Tell participants to tick "Preserve log" in the Network tab before clicking,
+  so the 301 row is not cleared when the browser navigates to the redirect target.
+- If you want participants to only see the clue in the Network tab (harder),
+  remove the body from the 301 response in run_server.py.

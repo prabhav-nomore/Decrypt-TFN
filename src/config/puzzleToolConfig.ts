@@ -96,5 +96,9 @@ export const puzzleToolConfig: Record<string, ToolConfig> = {
   'HTML Inspection': {
     builtinUtils: ['encoding-chain', 'base-converter'],
     externalLinks: []
+  },
+  'Maze / Pathfinding': {
+    builtinUtils: ['grid-renderer', 'path-visualizer'],
+    externalLinks: []
   }
 };
