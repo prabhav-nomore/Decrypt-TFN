@@ -275,38 +275,68 @@ router.post('/admin/team/timer-action', isAdmin, async (req, res) => {
 router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
   try {
     const puzzleBankPath = path.join(__dirname, '..', 'puzzle_bank');
-    const folders = await fs.readdir(puzzleBankPath);
-    const puzzles = [];
+    const puzzles: any[] = [];
 
-    for (const folder of folders) {
-      const folderPath = path.join(puzzleBankPath, folder);
-      if ((await fs.stat(folderPath)).isDirectory()) {
-        const readmeMdPath = path.join(folderPath, 'README.md');
-        const readmeTxtPath = path.join(folderPath, 'README.txt');
-        const solutionPath = path.join(folderPath, 'solution.txt');
-        
-        let text = '';
-        if (await fs.pathExists(readmeMdPath)) {
-          text = await fs.readFile(readmeMdPath, 'utf-8');
-        } else if (await fs.pathExists(readmeTxtPath)) {
-          text = await fs.readFile(readmeTxtPath, 'utf-8');
-        }
-
-        if (text) {
-          let answer = 'password'; // Default for preview
-          if (await fs.pathExists(solutionPath)) {
-            answer = (await fs.readFile(solutionPath, 'utf-8')).trim();
-          }
+    async function scanDir(dir: string) {
+      const entries = await fs.readdir(dir);
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry);
+        const stat = await fs.stat(fullPath);
+        if (stat.isDirectory()) {
+          const readmeMdPath = path.join(fullPath, 'README.md');
+          const readmeTxtPath = path.join(fullPath, 'README.txt');
+          const solutionPath = path.join(fullPath, 'solution.txt');
           
-          puzzles.push({
-            puzzle_id: folder,
-            puzzle_text: text,
-            correct_answer: answer,
-            reference_type: 'text'
-          });
+          let text = '';
+          if (await fs.pathExists(readmeMdPath)) {
+            text = await fs.readFile(readmeMdPath, 'utf-8');
+          } else if (await fs.pathExists(readmeTxtPath)) {
+            text = await fs.readFile(readmeTxtPath, 'utf-8');
+          }
+
+          if (text) {
+            let answer = 'password'; // Default for preview
+            if (await fs.pathExists(solutionPath)) {
+              answer = (await fs.readFile(solutionPath, 'utf-8')).trim();
+            }
+            
+            let type = 'Mixed / Meta';
+            let isolatedUrl = null;
+            const lowerDir = entry.toLowerCase();
+            if (lowerDir.includes('cipher') || lowerDir.includes('caesar') || lowerDir.includes('morse')) type = 'Cryptography';
+            else if (lowerDir.includes('steg')) type = 'Steganography';
+            else if (lowerDir.includes('code') || lowerDir.includes('debug')) type = 'Code Debugging';
+            else if (lowerDir.includes('math') || lowerDir.includes('numeric')) type = 'Number Theory';
+            else if (lowerDir.includes('network')) type = 'Networking';
+            else if (lowerDir.includes('logic')) type = 'Logic / Patterns';
+            else if (lowerDir.includes('osint')) type = 'OSINT';
+            else if (lowerDir.includes('forensic')) type = 'Forensics';
+            else if (lowerDir.includes('audio')) type = 'Audio / Spectrogram';
+            else if (lowerDir.includes('binary') || lowerDir.includes('bitwise')) type = 'Binary / Bitwise';
+            
+            // Detect HTML Inspection
+            const indexHtmlPath = path.join(fullPath, 'index.html');
+            if (await fs.pathExists(indexHtmlPath)) {
+              type = 'HTML Inspection';
+              isolatedUrl = `/puzzles/${entry}/index.html`;
+            }
+
+            puzzles.push({
+              puzzle_id: entry,
+              puzzle_text: text,
+              correct_answer: answer,
+              reference_type: type,
+              isolated_url: isolatedUrl
+            });
+          } else {
+            // Recurse if no README found here
+            await scanDir(fullPath);
+          }
         }
       }
     }
+
+    await scanDir(puzzleBankPath);
 
     const db = await readDB();
     db.puzzles = puzzles;
@@ -326,6 +356,36 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
     console.error('Sync error:', err);
     res.status(500).json({ error: 'Sync failed' });
   }
+});
+
+// Notepad routes
+router.get('/team/notepad', async (req, res) => {
+  const { teamId } = req.query;
+  const db = await readDB();
+  const notepad = db.notepads?.find(n => n.team_id === teamId) || { team_id: teamId, content: '', updated_at: Date.now() };
+  res.json(notepad);
+});
+
+router.post('/team/notepad', async (req, res) => {
+  const { teamId, content } = req.body;
+  const db = await readDB();
+  if (!db.notepads) db.notepads = [];
+  
+  let notepad = db.notepads.find(n => n.team_id === teamId);
+  if (notepad) {
+    notepad.content = content;
+    notepad.updated_at = Date.now();
+  } else {
+    notepad = { team_id: teamId, content, updated_at: Date.now() };
+    db.notepads.push(notepad);
+  }
+
+  if (supabase) {
+    await supabase.from('notepads').upsert([notepad]);
+  } else {
+    await writeDB(db);
+  }
+  res.json({ success: true });
 });
 
 // Puzzle routes

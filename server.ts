@@ -33,6 +33,9 @@ async function startServer() {
   // API routes
   app.use('/api', apiRoutes);
 
+  // Serve puzzles directory for HTML inspection
+  app.use('/puzzles', express.static(path.join(__dirname, 'puzzles')));
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

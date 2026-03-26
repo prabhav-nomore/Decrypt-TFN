@@ -15,14 +15,19 @@ import {
   Loader2,
   Shield,
   SkipForward,
-  Zap
+  Zap,
+  Edit3
 } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
+import ToolsPanel from '../components/ToolsPanel/ToolsPanel';
+import ScratchNotepad from '../components/ToolsPanel/ScratchNotepad';
+import ClipboardTray from '../components/ToolsPanel/ClipboardTray';
 
 interface Puzzle {
   puzzle_id: string;
   puzzle_text: string;
   reference_type: string;
+  isolated_url?: string | null;
 }
 
 interface Assignment {
@@ -407,6 +412,11 @@ export default function TeamDashboard() {
                       </div>
                     </div>
 
+                    <ToolsPanel 
+                      puzzleType={currentPuzzle.reference_type} 
+                      isolatedUrl={currentPuzzle.isolated_url}
+                    />
+
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div className="relative">
                         <ChevronRight className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444]" />
@@ -583,9 +593,14 @@ export default function TeamDashboard() {
               </div>
             </div>
           </div>
+
+          <div className="h-[400px]">
+            <ScratchNotepad teamId={teamId!} teamToken={teamToken!} />
+          </div>
         </div>
       </main>
 
+      <ClipboardTray />
       <footer className="max-w-6xl mx-auto mt-12 pt-8 border-t border-[#222] text-center text-[10px] text-[#333] uppercase tracking-[0.5em]">
         TFN_TEST_SITE // SECURE_COMMUNICATION_PROTOCOL_v4.2
       </footer>

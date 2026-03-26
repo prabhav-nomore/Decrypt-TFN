@@ -56,12 +56,19 @@ export interface Lifeline {
   lifeline_used: number;
 }
 
+export interface Notepad {
+  team_id: string;
+  content: string;
+  updated_at: number;
+}
+
 export interface Database {
   teams: Team[];
   puzzles: Puzzle[];
   assignments: Assignment[];
   submissions: Submission[];
   lifelines: Lifeline[];
+  notepads: Notepad[];
 }
 
 const DEFAULT_DB: Database = {
@@ -77,7 +84,8 @@ const DEFAULT_DB: Database = {
   puzzles: [],
   assignments: [],
   submissions: [],
-  lifelines: []
+  lifelines: [],
+  notepads: []
 };
 
 export async function readDB(): Promise<Database> {
@@ -87,13 +95,15 @@ export async function readDB(): Promise<Database> {
       { data: puzzles },
       { data: assignments },
       { data: submissions },
-      { data: lifelines }
+      { data: lifelines },
+      { data: notepads }
     ] = await Promise.all([
       supabase.from('teams').select('*'),
       supabase.from('puzzles').select('*'),
       supabase.from('assignments').select('*'),
       supabase.from('submissions').select('*'),
-      supabase.from('lifelines').select('*')
+      supabase.from('lifelines').select('*'),
+      supabase.from('notepads').select('*')
     ]);
 
     return {
@@ -101,7 +111,8 @@ export async function readDB(): Promise<Database> {
       puzzles: puzzles || [],
       assignments: assignments || [],
       submissions: submissions || [],
-      lifelines: lifelines || []
+      lifelines: lifelines || [],
+      notepads: notepads || []
     };
   } else {
     // Local JSON fallback
