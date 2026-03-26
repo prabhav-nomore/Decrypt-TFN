@@ -1,8 +1,0 @@
-Open morse_<WORD>.wav in Audacity. Use the Zoom tool to zoom horizontally.
-Short pulses are dots, long pulses are dashes.
-Use the Selection toolbar to read durations:
-  ~0.12s = dot (.)
-  ~0.36s = dash (-)
-  ~0.12s silence = gap within a letter
-  ~0.36s silence = gap between letters
-  ~0.84s silence = gap between words
