@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { readDB } from './db.js';
+import { readDB } from './db.ts';
 
 let ioInstance: Server;
 

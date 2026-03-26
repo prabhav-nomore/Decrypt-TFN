@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { supabase, readDB, writeDB } from '../db.js';
-import { notifyAdmin, notifyTeam } from '../socket.js';
+import { supabase, readDB, writeDB } from '../db.ts';
+import { notifyAdmin, notifyTeam } from '../socket.ts';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import fs from 'fs-extra';

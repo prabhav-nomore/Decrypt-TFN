@@ -6,8 +6,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
 import cors from 'cors';
-import apiRoutes from './server/routes/api.js';
-import { setupSocket } from './server/socket.js';
+import apiRoutes from './server/routes/api.ts';
+import { setupSocket } from './server/socket.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
