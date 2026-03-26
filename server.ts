@@ -34,7 +34,7 @@ async function startServer() {
   app.use('/api', apiRoutes);
 
   // Serve puzzles directory for HTML inspection
-  app.use('/puzzles', express.static(path.join(__dirname, 'puzzles')));
+  app.use('/puzzles', express.static(path.join(__dirname, 'server', 'puzzle_bank')));
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {

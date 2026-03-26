@@ -1,0 +1,21 @@
+Solutions (organizer reference) — Puzzle 403
+
+Working files:
+- index.html links to pages/public-report.html (loads normally, no error).
+
+Example single-line edit participants should make:
+1) Change link href:
+   <a href="pages/public-report.html">Public Report</a>
+   -> <a href="pages/secret-report.html">Public Report</a>
+
+   Clicking the link sends GET /pages/secret-report.html to the server.
+   The server responds with HTTP 403 Forbidden.
+   The response body contains "Clue: 403".
+   DevTools Network tab shows the 403 status on the request row.
+
+Organizer tip:
+- Run with python3 run_server.py (port 8002).
+- The protected path list (FORBIDDEN_PATHS) in run_server.py can be extended
+  to cover other paths if you want to set up decoy attempts.
+- To make it harder, remove the body clue and tell participants to only use
+  the Network tab to find the status code.

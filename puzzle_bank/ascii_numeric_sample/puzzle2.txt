@@ -1,0 +1,16 @@
+SYMBOL ASCII ART — Hidden Word
+================================================================================
+(Use a monospace font. The shapes formed by the symbols read as letters.)
+
+   *****      @@@   @@@    ###########    $$$$$$$
+   *    *     @@@   @@@         ###       $
+   *    *     @@@   @@@        ###        $
+   *****       @@@@@           ###        $$$$$
+   *    *       @@@           ###               $
+   *    *     @@@   @@@      ###                $
+   *****      @@@   @@@    ###########    $$$$$$$
+
+================================================================================
+Hint: Each unique symbol (* @ # $) outlines exactly one letter. Read left to right.
+Final key format to submit:  `SYMKEY: <WORD>`  (example: `SYMKEY: CODE`)
+================================================================================

@@ -1,0 +1,17 @@
+DASH ASCII ART — Hidden Word
+================================================================================
+(Use a monospace font. The shapes formed by the symbols read as letters.)
+
+   ------     |||||||    ||||  ||||    @@@@@@@@
+   -    -        |       ||||  ||||    @
+   -    -        |       ||  ||  ||    @
+   ------        |       ||  ||  ||    @   @@@@@
+   -    -        |       ||      ||    @       @
+   -    -        |       ||      ||    @       @
+   ------     |||||||    ||      ||    @@@@@@@@
+
+================================================================================
+Hint: Each unique symbol block (- | | @) outlines exactly one letter. Read left to right.
+      Two blocks share the | symbol — their internal shapes make different letters.
+Final key format to submit:  `DSHKEY: <WORD>`  (example: `DSHKEY: FILE`)
+================================================================================

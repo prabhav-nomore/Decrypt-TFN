@@ -1,0 +1,17 @@
+Solutions (organizer reference) — Puzzle 410
+
+Working files:
+- index.html links to pages/newsletter.html (loads normally).
+
+Edit to make:
+  <a href="pages/newsletter.html">Newsletter Archive</a>
+  -> <a href="pages/deleted-newsletter.html">Newsletter Archive</a>
+
+Result: Server responds HTTP 410 with "Clue: 410" in the body.
+Also visible in DevTools -> Network tab as status 410.
+
+Organizer tip:
+- Use this puzzle alongside the 404 puzzle to highlight the difference:
+    404 = resource not found (server doesn't know if it ever existed)
+    410 = resource definitely existed and was intentionally deleted
+- Search engines treat 410 as a permanent signal to remove the URL from their index.
