@@ -75,6 +75,12 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/teams', {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        logoutAdmin();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok) {
         const processedTeams = data.map((t: any) => ({
@@ -101,6 +107,12 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        logoutAdmin();
+        return;
+      }
+
       if (response.ok) {
         alert('Puzzle bank synced successfully!');
       }

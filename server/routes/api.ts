@@ -13,6 +13,26 @@ const __dirname = path.dirname(__filename);
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+const isAdmin = (req: any, res: any, next: any) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader ? authHeader.split(' ')[1] : null;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+    if (decoded.role === 'admin') {
+      next();
+    } else {
+      res.status(403).json({ error: 'Forbidden: Admin access required' });
+    }
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
 // Auth routes
 router.post('/login', async (req, res) => {
   const { teamId, password } = req.body;
@@ -114,7 +134,13 @@ router.post('/team/ban', async (req, res) => {
 
 router.post('/admin/login', async (req, res) => {
   const { password } = req.body;
-  if (password === (process.env.ADMIN_PASSWORD || 'admin123')) {
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminPassword) {
+    return res.status(500).json({ error: 'ADMIN_PASSWORD environment variable is not set' });
+  }
+
+  if (password === adminPassword) {
     const token = jwt.sign({ role: 'admin' }, JWT_SECRET);
     res.json({ token });
   } else {
@@ -123,7 +149,7 @@ router.post('/admin/login', async (req, res) => {
 });
 
 // Admin routes
-router.get('/admin/teams', async (req, res) => {
+router.get('/admin/teams', isAdmin, async (req, res) => {
   const db = await readDB();
   const teamsWithStats = db.teams.map(team => {
     const activeAssignment = db.assignments.find(a => a.team_id === team.team_id && a.status === 'active');
@@ -143,7 +169,7 @@ router.get('/admin/teams', async (req, res) => {
   res.json(teamsWithStats);
 });
 
-router.post('/admin/register-team', async (req, res) => {
+router.post('/admin/register-team', isAdmin, async (req, res) => {
   const { teamId, teamName, password } = req.body;
   const passwordHash = await bcrypt.hash(password, 10);
   
@@ -164,7 +190,7 @@ router.post('/admin/register-team', async (req, res) => {
   res.json({ message: 'Team registered successfully' });
 });
 
-router.post('/admin/unban', async (req, res) => {
+router.post('/admin/unban', isAdmin, async (req, res) => {
   const { teamId } = req.body;
   const db = await readDB();
   const team = db.teams.find(t => t.team_id === teamId);
@@ -189,7 +215,7 @@ router.post('/admin/unban', async (req, res) => {
   }
 });
 
-router.post('/admin/team/timer-action', async (req, res) => {
+router.post('/admin/team/timer-action', isAdmin, async (req, res) => {
   const { teamId, action } = req.body;
   const db = await readDB();
   const team = db.teams.find(t => t.team_id === teamId);
@@ -246,7 +272,7 @@ router.post('/admin/team/timer-action', async (req, res) => {
   res.json({ success: true });
 });
 
-router.post('/admin/sync-puzzles', async (req, res) => {
+router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
   try {
     const puzzleBankPath = path.join(__dirname, '..', 'puzzle_bank');
     const folders = await fs.readdir(puzzleBankPath);

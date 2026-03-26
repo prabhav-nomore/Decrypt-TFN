@@ -13,6 +13,10 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!password.trim()) {
+      setError('Password is required');
+      return;
+    }
     setError('');
     setLoading(true);
 

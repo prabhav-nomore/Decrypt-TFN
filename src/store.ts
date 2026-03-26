@@ -11,11 +11,17 @@ interface AuthState {
   logoutAdmin: () => void;
 }
 
+const getStorageItem = (key: string) => {
+  const item = localStorage.getItem(key);
+  if (item === 'null' || item === 'undefined') return null;
+  return item;
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
-  teamToken: localStorage.getItem('teamToken'),
-  adminToken: localStorage.getItem('adminToken'),
-  teamId: localStorage.getItem('teamId'),
-  teamName: localStorage.getItem('teamName'),
+  teamToken: getStorageItem('teamToken'),
+  adminToken: getStorageItem('adminToken'),
+  teamId: getStorageItem('teamId'),
+  teamName: getStorageItem('teamName'),
   setTeamAuth: (token, teamId, teamName) => {
     localStorage.setItem('teamToken', token);
     localStorage.setItem('teamId', teamId);
