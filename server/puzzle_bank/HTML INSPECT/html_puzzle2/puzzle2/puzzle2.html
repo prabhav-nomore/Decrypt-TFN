@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle 2: The Art Gallery</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;700&display=swap');
+    :root { --secret-word: "COBALT"; }
+    body {
+      margin: 0; font-family: 'Josefin Sans', sans-serif;
+      background: #f5f5f0; color: #111;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gallery {
+      max-width: 700px; width: 90%;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 50px;
+      box-shadow: 8px 8px 0 #111;
+    }
+    h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.05em; text-transform: uppercase; }
+    .artwork {
+      width: 100%; height: 200px;
+      background: linear-gradient(135deg, #001f7a, #0047ab, #4a90d9);
+      margin: 30px 0;
+      display: flex; align-items: center; justify-content: center;
+      color: transparent; /* The answer is a shade of blue */
+      font-size: 1.2rem;
+      /* HINT: Inspect the CSS variable --secret-word */
+    }
+    .artwork::before { content: "Untitled No. 7"; color: white; font-weight: 700; letter-spacing: 0.2em; }
+    p { line-height: 1.7; font-weight: 300; }
+    /* The painting is named after a colour. That colour is COBALT. */
+  </style>
+</head>
+<body>
+  <div class="gallery">
+    <h1>The Art Gallery</h1>
+    <div class="artwork"></div>
+    <p>This anonymous masterpiece has baffled critics for decades. The artist signed only with a colour — the very shade you see before you.</p>
+    <p>The curator's records are sealed. But the CSS knows the truth.</p>
+    <!-- The key is the color that defines this painting. Check the CSS variable. -->
+    <span style="opacity:0; font-size:0; user-select:none">ANSWER: COBALT</span>
+  </div>
+</body>
+</html>

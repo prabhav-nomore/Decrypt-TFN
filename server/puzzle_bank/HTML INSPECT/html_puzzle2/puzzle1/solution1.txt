@@ -1,0 +1,13 @@
+PUZZLE 1 — The Lost Expedition
+================================
+HIDDENKEY: DRAGONFLY
+
+Where to find it:
+  1. HTML comment: <!-- FRAGMENT_1: DRAGON -->
+  2. Hidden div:   <div style="display:none" id="frag2">FRAGMENT_2: FIRE</div>
+  3. HTML comment: <!-- FRAGMENT_3: FLY -->
+
+Combine in order: DRAGON + FIRE + FLY = DRAGONFLY
+
+Technique: HTML Comments + Hidden Div (display:none)
+Difficulty: Beginner

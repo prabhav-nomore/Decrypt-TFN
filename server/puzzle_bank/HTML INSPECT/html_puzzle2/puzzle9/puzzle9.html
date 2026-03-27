@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle 9: The Antique Shop</title>
+  <!-- The shop's safe combination is: OBSIDIAN -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700&family=Spectral:ital,wght@0,400;1,400&display=swap');
+    body { margin: 0; background: #1c1410; color: #c8a876; font-family: 'Spectral', serif; }
+    .shop { max-width: 700px; margin: 50px auto; padding: 40px; background: #120e0a; border: 1px solid #3d2b1a; }
+    h1 { font-family: 'Playfair Display SC', serif; font-size: 2rem; color: #d4a84b; text-align: center; }
+    p { line-height: 1.9; }
+    .items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 30px 0; }
+    .item { border: 1px solid #3d2b1a; padding: 16px; border-radius: 4px; text-align: center; cursor: default; transition: border-color 0.2s; }
+    .item:hover { border-color: #8b6a3a; }
+    .item-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .item-name { font-family: 'Playfair Display SC', serif; font-size: 0.85rem; color: #a07840; letter-spacing: 0.05em; }
+    .item-desc { font-size: 0.8rem; font-style: italic; margin-top: 6px; color: #7a5830; }
+    .tag { display: inline-block; font-size: 0.7rem; background: #2a1c0e; border: 1px solid #5a3a1a; padding: 2px 8px; border-radius: 2px; margin-top: 8px; }
+    footer { text-align: center; font-size: 0.8rem; color: #4a3020; margin-top: 20px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="shop">
+    <h1>Mira's Antique Emporium</h1>
+    <p>Each item in this curious shop carries a tag. Hover over them — or inspect their titles. One holds the combination to the back-room safe.</p>
+
+    <div class="items">
+      <div class="item">
+        <div class="item-icon">🕰️</div>
+        <div class="item-name">Pocket Watch</div>
+        <div class="item-desc">Stopped at 3:17. Owner unknown.</div>
+        <div class="tag" title="Ref: PW-1841. Provenance: Uncertain.">TAG</div>
+      </div>
+      <div class="item">
+        <div class="item-icon">🗝️</div>
+        <div class="item-name">Skeleton Key</div>
+        <div class="item-desc">Opens a door no one can find.</div>
+        <div class="tag" title="Ref: SK-0032. SAFE_CODE: OBSIDIAN">TAG</div>
+      </div>
+      <div class="item">
+        <div class="item-icon">🪞</div>
+        <div class="item-name">Antique Mirror</div>
+        <div class="item-desc">Reflects slightly different rooms.</div>
+        <div class="tag" title="Ref: AM-0774. Fragile. Handle with care.">TAG</div>
+      </div>
+    </div>
+
+    <!-- Hover over the item tags, or inspect their title attributes -->
+    <!-- One tag contains: SAFE_CODE: OBSIDIAN -->
+
+    <footer>Est. 1887 — "We sell things that have stories."</footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+PUZZLE 10 — The Radio Tower
+=============================
+HIDDENKEY: ECLIPSE
+
+Where to find it (appears 3 times):
+  1. HTML opening tag comment (very top of file):
+       <!-- TRANSMISSION_CODE: ECLIPSE -->
+       (This is a comment placed just after the <!DOCTYPE html> line)
+
+  2. Page <title> tag:
+       <title>Puzzle 10: The Radio Tower — [CALLSIGN: ECLIPSE]</title>
+
+  3. HTML comment in the body:
+       <!-- CALLSIGN: ECLIPSE -->
+
+  View Page Source (Ctrl+U) and search for "ECLIPSE" to find all three locations.
+  The callsign appears at the very top (html tag comment), in the title, 
+  and near the bottom of the body.
+
+Technique: HTML comments in document structure + <title> tag
+Difficulty: Advanced

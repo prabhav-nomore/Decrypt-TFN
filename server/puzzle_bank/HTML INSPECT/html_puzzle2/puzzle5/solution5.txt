@@ -1,0 +1,17 @@
+PUZZLE 5 — The Login Vault
+============================
+HIDDENKEY: NIGHTWATCH
+
+Where to find it:
+  Inside the <form> area, a hidden input field:
+    <input type="hidden" name="override_token" value="NIGHTWATCH" id="bypass">
+
+  In DevTools → Elements, search for type="hidden" or name="override_token".
+  In View Page Source, search for "hidden" to locate it.
+
+  Note: There is also a decoy hidden field:
+    <input type="hidden" name="session_id" value="NX-4491-ZZ">
+  The correct field is the one named "override_token".
+
+Technique: HTML hidden input fields (type="hidden")
+Difficulty: Intermediate

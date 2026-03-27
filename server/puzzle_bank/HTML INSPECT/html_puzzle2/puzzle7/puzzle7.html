@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle 7: Mission Control</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #040d1a; color: #4fc3f7; font-family: 'Rajdhani', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .panel { width: 680px; background: #07111f; border: 1px solid #0d3b66; border-radius: 8px; padding: 36px; box-shadow: 0 0 50px rgba(10,80,160,0.3); }
+    h1 { font-family: 'Orbitron', monospace; font-size: 1.6rem; font-weight: 900; color: #4fc3f7; letter-spacing: 0.15em; text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; font-size: 0.85rem; letter-spacing: 0.2em; color: #2980b9; margin-bottom: 30px; }
+    .readout { background: #000d1a; border: 1px solid #0d3b66; border-radius: 4px; padding: 20px; font-family: 'Orbitron', monospace; font-size: 0.85rem; line-height: 2; }
+    .readout span { color: #00e5ff; }
+    .readout .ok { color: #00ff88; }
+    .readout .warn { color: #ffcc00; }
+    .launch-btn { display: block; width: 100%; margin-top: 24px; padding: 14px; background: #0d3b66; color: #4fc3f7; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 900; letter-spacing: 0.15em; border: 1px solid #4fc3f7; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+    .launch-btn:hover { background: #1a5276; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>MISSION CONTROL</h1>
+    <div class="subtitle">CLASSIFIED — AUTHORISED ACCESS ONLY</div>
+    <div class="readout">
+      SYSTEM STATUS: <span class="ok">NOMINAL</span><br>
+      FUEL LEVEL: <span>94.7%</span><br>
+      TRAJECTORY: <span class="ok">LOCKED</span><br>
+      CREW: <span>4 / 4 ABOARD</span><br>
+      LAUNCH WINDOW: <span class="warn">T-MINUS 00:07:32</span><br>
+      ABORT CODE: <span class="warn">CLASSIFIED</span>
+    </div>
+    <button class="launch-btn" onclick="alert('LAUNCH SEQUENCE REQUIRES ABORT CODE.')">▶ INITIATE LAUNCH</button>
+  </div>
+
+  <script>
+    // Mission configuration (DO NOT MODIFY)
+    const missionConfig = {
+      missionName: "Operation Starfall",
+      launchSite: "Cape Bravo",
+      crewCount: 4,
+      abortCode: "ZENITH",       // <-- This is what you need
+      classification: "TOP SECRET",
+      authorisedBy: "Director M. Harlow"
+    };
+
+    // The abort code must be entered before launch can proceed.
+    // Check the browser console or the source script for mission parameters.
+    console.log("Mission loaded. Config available in missionConfig object.");
+  </script>
+</body>
+</html>

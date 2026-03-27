@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hidden Layers Puzzle</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .card {
+      width: 420px;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+
+    h1 {
+      margin-bottom: 15px;
+      font-size: 26px;
+      letter-spacing: 1px;
+    }
+
+    .hint {
+      font-size: 16px;
+      margin-top: 15px;
+      color: #dcdcdc;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Decorative glowing line */
+    .line {
+      height: 3px;
+      width: 60px;
+      margin: 15px auto;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border-radius: 10px;
+    }
+
+    /* Hidden CSS clue */
+    .mystery::after {
+      content: "Sometimes the answer is right below you.";
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>🧠 Hidden Layers</h1>
+    <div class="line"></div>
+
+    <p class="hint">Not everything important is visible.</p>
+    <p class="hint">Look carefully… small details matter.</p>
+
+    <!-- Fake clue -->
+    <!-- HIDDENKEY: SKY -->
+
+    <!-- Real hint -->
+    <!-- Look below this container -->
+
+    <div class="hidden">
+      Nothing useful here...
+    </div>
+
+  </div>
+
+  <!-- The real secret is outside the main card -->
+  <footer style="display:none">
+    HIDDENKEY: EARTH
+  </footer>
+
+</body>
+</html>

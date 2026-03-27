@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Access</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: #00ff9c;
+      font-family: "Courier New", monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .terminal {
+      width: 600px;
+      background: #010101;
+      border: 2px solid #00ff9c;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ff9c;
+    }
+
+    .line {
+      margin: 10px 0;
+    }
+
+    .prompt::before {
+      content: "user@system:~$ ";
+      color: #00ff9c;
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Hidden CSS message */
+    .trace::after {
+      content: "The truth is not inside...";
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="terminal">
+    <div class="line prompt">Accessing system...</div>
+    <div class="line">Searching for hidden key...</div>
+    <div class="line">Permission denied ❌</div>
+    <div class="line">Try another approach.</div>
+
+    <!-- Fake key -->
+    <!-- HIDDENKEY: ACCESS -->
+
+    <!-- Hint -->
+    <!-- Sometimes the system hides things outside its core -->
+
+    <div class="hidden">
+      Nothing here...
+    </div>
+
+    <div class="line prompt">_ <span class="blink">|</span></div>
+  </div>
+
+  <!-- Real hidden location -->
+  <div style="display:none">
+    HIDDENKEY: ROOT
+  </div>
+
+</body>
+</html>

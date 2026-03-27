@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secret Code Puzzle</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #f6d365, #fda085);
+      padding: 40px;
+    }
+
+    .box {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .text {
+      font-size: 18px;
+      margin-top: 20px;
+      color: #444;
+    }
+
+    /* Hidden CSS Clue */
+    .mystery::after {
+      content: "Clue: It shines only at night and lights the sky 🌙";
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>🔍 Secret Code Puzzle</h1>
+
+    <p class="text">Everything is not what it seems...</p>
+    <p class="text">Try to explore beyond the visible content.</p>
+
+    <!-- Hidden Hint Section -->
+    <!-- The answer format is: HIDDENKEY: MOONLIGHT -->
+    <!-- Think about something that glows in darkness -->
+    <!-- End of Hint -->
+
+    <div style="display:none">
+      Hidden Area: HIDDENKEY: MOONLIGHT
+    </div>
+
+  </div>
+
+</body>
+</html>

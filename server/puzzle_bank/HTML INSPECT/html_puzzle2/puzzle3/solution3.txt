@@ -1,0 +1,15 @@
+PUZZLE 3 — Daily Weather Report
+=================================
+HIDDENKEY: CIPHER
+
+Where to find it:
+  In the <head> section, among the <meta> tags:
+    <meta name="secret-code" content="CIPHER">
+
+  Also hinted by:
+    <meta name="puzzle-hint" content="The answer is hidden in the head, not the body.">
+
+  View Page Source (Ctrl+U) and search for "secret-code" to find it quickly.
+
+Technique: <meta> tag custom attributes in the <head>
+Difficulty: Beginner

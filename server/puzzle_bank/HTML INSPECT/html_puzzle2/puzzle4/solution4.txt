@@ -1,0 +1,18 @@
+PUZZLE 4 — Museum of Curiosities
+==================================
+HIDDENKEY: AMBERSTONEGATE
+
+Where to find it:
+  Each exhibit <div> has two custom data attributes:
+    Exhibit 1: data-fragment="AMBER"  data-order="1"
+    Exhibit 2: data-fragment="STONE"  data-order="2"
+    Exhibit 3: data-fragment="GATE"   data-order="3"
+
+  In DevTools → Elements panel, click each .exhibit div and read the attributes.
+  Combine in data-order sequence: AMBER + STONE + GATE = AMBERSTONEGATE
+
+  Also hinted in HTML comment:
+    <!-- The key is formed by reading the data-fragment attributes in data-order sequence -->
+
+Technique: HTML data-* custom attributes
+Difficulty: Intermediate

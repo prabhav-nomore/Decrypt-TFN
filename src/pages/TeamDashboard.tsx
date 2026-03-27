@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -16,7 +16,9 @@ import {
   Shield,
   SkipForward,
   Zap,
-  Edit3
+  Edit3,
+  FileCode,
+  ExternalLink
 } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import ToolsPanel from '../components/ToolsPanel/ToolsPanel';
@@ -36,9 +38,16 @@ interface Assignment {
   status: string;
 }
 
+interface PuzzleFile {
+  name: string;
+  url: string;
+  size: number;
+}
+
 export default function TeamDashboard() {
   const { teamId, teamName, teamToken, logoutTeam } = useAuthStore();
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
+  const [puzzleFiles, setPuzzleFiles] = useState<PuzzleFile[]>([]);
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [stats, setStats] = useState({ solved: 0, attempts: 0, points: 0 });
   const [lifeline, setLifeline] = useState({ lifeline_remaining: 3, lifeline_used: 0 });
@@ -52,37 +61,59 @@ export default function TeamDashboard() {
   const [sessionEndTime, setSessionEndTime] = useState<number | null>(null);
   const [mainTimer, setMainTimer] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const allowTabSwitchRef = useRef(false);
 
   useEffect(() => {
-    const reportViolation = (type: string) => {
+    const reportViolation = async (type: string) => {
       if (isGracePeriod) return; // Ignore violations during grace period
 
       const payload = JSON.stringify({ teamId, type, token: teamToken });
-      const blob = new Blob([payload], { type: 'application/json' });
       
-      // Use sendBeacon for reliable reporting during exit
-      navigator.sendBeacon('/api/team/violation', blob);
-      
-      // Also try regular fetch if we're not exiting
-      if (type !== 'exited_session') {
-        fetch('/api/team/violation', {
+      if (type === 'exited_session') {
+        const blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon('/api/team/violation', blob);
+        logoutTeam();
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/team/violation', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${teamToken}`
           },
           body: payload,
-        }).catch(console.error);
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.isBanned) {
+            logoutTeam();
+            window.close();
+            window.location.href = '/?error=SECURITY_VIOLATION';
+          } else {
+            setMessage({ 
+              text: `SECURITY WARNING: Violation detected [${type}]. Strike ${data.violationCount}/3. Your session will be terminated on the 3rd strike.`, 
+              type: 'error' 
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Violation reporting failed:', err);
       }
-      
-      logoutTeam();
-      window.close();
-      window.location.href = '/?error=SECURITY_VIOLATION';
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
+        if (allowTabSwitchRef.current) {
+          // Trusted switch - don't ban
+          return;
+        }
         reportViolation('tab_switch');
+      } else if (document.visibilityState === 'visible') {
+        // Re-arm when returning
+        allowTabSwitchRef.current = false;
       }
     };
 
@@ -196,12 +227,43 @@ export default function TeamDashboard() {
         setLifeline(data.lifeline);
         setSessionEndTime(data.sessionEndTime);
         setIsPaused(data.isPaused);
+        
+        if (data.puzzle) {
+          fetchPuzzleFiles(data.puzzle.puzzle_id);
+        } else {
+          setPuzzleFiles([]);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch state');
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchPuzzleFiles = async (puzzleId: string) => {
+    try {
+      const response = await fetch(`/api/team/puzzle-files?puzzleId=${puzzleId}`, {
+        headers: { 'Authorization': `Bearer ${teamToken}` }
+      });
+      if (response.ok) {
+        const files = await response.json();
+        setPuzzleFiles(files);
+      }
+    } catch (err) {
+      console.error('Failed to fetch puzzle files');
+    }
+  };
+
+  const handleOpenTrustedLink = (url: string) => {
+    allowTabSwitchRef.current = true;
+    window.open(url, '_blank');
+    // Reset after a short delay just in case the switch didn't happen (e.g. popup blocked)
+    setTimeout(() => {
+      if (document.visibilityState === 'visible') {
+        allowTabSwitchRef.current = false;
+      }
+    }, 2000);
   };
 
   useEffect(() => {
@@ -412,9 +474,34 @@ export default function TeamDashboard() {
                       </div>
                     </div>
 
+                    {puzzleFiles.length > 0 && (
+                      <div className="space-y-3">
+                        <h4 className="text-[10px] text-[#444] uppercase tracking-widest font-bold">Associated Files</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {puzzleFiles.map((file) => (
+                            <div key={file.name} className="bg-[#050505] border border-[#222] p-3 rounded flex items-center justify-between group hover:border-[#00ff00]/30 transition-colors">
+                              <div className="flex items-center gap-3 overflow-hidden">
+                                <FileCode className="w-4 h-4 text-[#444] group-hover:text-[#00ff00] shrink-0" />
+                                <span className="text-xs truncate text-[#666] group-hover:text-[#00ff00]">{file.name}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenTrustedLink(file.url)}
+                                className="p-1.5 hover:bg-[#00ff00]/10 rounded text-[#444] hover:text-[#00ff00] transition-all"
+                                title="Open File"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <ToolsPanel 
                       puzzleType={currentPuzzle.reference_type} 
                       isolatedUrl={currentPuzzle.isolated_url}
+                      onOpenLink={handleOpenTrustedLink}
                     />
 
                     <form onSubmit={handleSubmit} className="space-y-4">

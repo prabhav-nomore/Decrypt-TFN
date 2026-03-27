@@ -1,0 +1,18 @@
+PUZZLE 7 — Mission Control
+============================
+HIDDENKEY: ZENITH
+
+Where to find it:
+  In the <script> block at the bottom of the page:
+    const missionConfig = {
+      ...
+      abortCode: "ZENITH",   // <-- this line
+      ...
+    };
+
+  Method 1 — View Page Source: Scroll to the <script> block.
+  Method 2 — DevTools Console: Type  missionConfig  and press Enter to see the object.
+  Method 3 — DevTools Sources tab: Find the inline script and read the variable.
+
+Technique: JavaScript variables in inline <script> blocks
+Difficulty: Advanced

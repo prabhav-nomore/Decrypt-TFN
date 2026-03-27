@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hidden Truth Puzzle</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #fbc2eb, #a6c1ee);
+      padding: 40px;
+    }
+
+    .box {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .text {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #444;
+    }
+
+    .invisible {
+      visibility: hidden;
+    }
+
+    /* Hidden CSS clue */
+    .clue::after {
+      content: "The answer is where light begins the day";
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>🔍 Hidden Truth Puzzle</h1>
+
+    <p class="text">Everything you see is not everything that exists.</p>
+    <p class="text">Look carefully… something is hidden in plain sight.</p>
+
+    <!-- First Hint -->
+    <!-- Think about the start of a new day -->
+
+    <!-- Fake Hint -->
+    <!-- HIDDENKEY: NIGHT -->
+
+    <div class="invisible">
+      HIDDENKEY: DAWN
+    </div>
+
+    <p class="text invisible">This line is invisible but exists.</p>
+
+  </div>
+
+</body>
+</html>

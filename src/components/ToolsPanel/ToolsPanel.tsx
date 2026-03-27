@@ -8,9 +8,10 @@ import { puzzleToolConfig } from '../../config/puzzleToolConfig';
 interface ToolsPanelProps {
   puzzleType: string;
   isolatedUrl?: string | null;
+  onOpenLink: (url: string) => void;
 }
 
-export default function ToolsPanel({ puzzleType, isolatedUrl }: ToolsPanelProps) {
+export default function ToolsPanel({ puzzleType, isolatedUrl, onOpenLink }: ToolsPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'builtin' | 'external'>('builtin');
 
@@ -69,6 +70,7 @@ export default function ToolsPanel({ puzzleType, isolatedUrl }: ToolsPanelProps)
                   links={config.externalLinks} 
                   isInspectPuzzle={isInspectPuzzle}
                   isolatedUrl={isolatedUrl}
+                  onOpenLink={onOpenLink}
                 />
               )}
             </div>

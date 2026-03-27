@@ -1,0 +1,8 @@
+Solution for 401 Unauthorized:
+==============================
+
+Change:
+<a href="pages/dashboard.html">Members Dashboard</a>
+
+To:
+<a href="pages/members-only.html">Members Dashboard</a>

@@ -24,13 +24,15 @@ export interface Team {
   session_paused_at?: number | null;
   paused_duration?: number;
   points?: number;
+  violation_count?: number;
 }
 
 export interface Puzzle {
   puzzle_id: string;
   puzzle_text: string;
   correct_answer: string;
-  reference_type: 'python' | 'javascript' | 'text';
+  reference_type: string;
+  isolated_url?: string | null;
 }
 
 export interface Assignment {

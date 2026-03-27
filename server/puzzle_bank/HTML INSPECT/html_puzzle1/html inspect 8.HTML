@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Elimination Puzzle</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1f4037, #99f2c8);
+    }
+
+    .card {
+      width: 480px;
+      padding: 30px;
+      border-radius: 12px;
+      background: white;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .option {
+      margin: 8px 0;
+      font-size: 18px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>🧠 Elimination Puzzle</h1>
+
+    <p>One of the following is correct.</p>
+
+    <div class="option">HIDDENKEY: FIRE</div>
+    <div class="option">HIDDENKEY: WATER</div>
+    <div class="option">HIDDENKEY: SHADOW</div>
+    <div class="option">HIDDENKEY: LIGHT</div>
+
+    <!-- Clue 1 -->
+    <!-- It is not something you can hold -->
+
+    <!-- Clue 2 -->
+    <div class="hidden">It removes darkness</div>
+
+    <!-- Clue 3 -->
+    <p class="hidden">It exists only when something shines</p>
+
+    <!-- Fake Misleading -->
+    <!-- Many fear it, but it is not shadow -->
+
+  </div>
+
+</body>
+</html>

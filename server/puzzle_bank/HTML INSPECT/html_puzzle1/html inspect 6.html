@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pattern Puzzle</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .card {
+      width: 450px;
+      padding: 25px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    .line {
+      margin: 8px 0;
+      font-size: 18px;
+    }
+
+    /* Hidden hint */
+    .secret::after {
+      content: "Focus on the beginnings.";
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>🧠 Pattern Puzzle</h1>
+
+    <p class="line">Silent winds move softly</p>
+    <p class="line">Under skies so vast</p>
+    <p class="line">Nature wakes slowly</p>
+    <p class="line">Rays of light appear</p>
+    <p class="line">In the calm morning</p>
+    <p class="line">Soft colors spread wide</p>
+    <p class="line">Every day begins anew</p>
+
+    <!-- Fake clue -->
+    <!-- HIDDENKEY: MORNING -->
+
+    <!-- Hint -->
+    <!-- The answer is hidden in the pattern of the text, maybe initials form something -->
+
+  </div>
+
+</body>
+</html>

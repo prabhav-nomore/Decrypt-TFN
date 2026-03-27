@@ -8,7 +8,8 @@ CREATE TABLE teams (
   is_banned BOOLEAN DEFAULT FALSE,
   session_paused_at BIGINT,
   paused_duration BIGINT DEFAULT 0,
-  points INTEGER DEFAULT 0
+  points INTEGER DEFAULT 0,
+  violation_count INTEGER DEFAULT 0
 );
 
 -- Puzzles Table
@@ -16,7 +17,8 @@ CREATE TABLE puzzles (
   puzzle_id TEXT PRIMARY KEY,
   puzzle_text TEXT NOT NULL,
   correct_answer TEXT NOT NULL,
-  reference_type TEXT NOT NULL CHECK (reference_type IN ('python', 'javascript', 'text'))
+  reference_type TEXT NOT NULL,
+  isolated_url TEXT
 );
 
 -- Assignments Table
@@ -43,4 +45,11 @@ CREATE TABLE lifelines (
   team_id TEXT PRIMARY KEY REFERENCES teams(team_id) ON DELETE CASCADE,
   lifeline_remaining INTEGER DEFAULT 3,
   lifeline_used INTEGER DEFAULT 0
+);
+
+-- Notepads Table
+CREATE TABLE notepads (
+  team_id TEXT PRIMARY KEY REFERENCES teams(team_id) ON DELETE CASCADE,
+  content TEXT DEFAULT '',
+  updated_at BIGINT NOT NULL
 );

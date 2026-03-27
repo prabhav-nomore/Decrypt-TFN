@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle 4: The Museum of Curiosities</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap');
+    body { margin: 0; background: #0d0d0d; color: #c8b89a; font-family: 'Crimson Text', serif; }
+    .museum { max-width: 720px; margin: 50px auto; padding: 40px; background: #141414; border: 1px solid #3a2d1e; }
+    h1 { font-family: 'Cinzel', serif; text-align: center; font-size: 2rem; color: #d4af6a; letter-spacing: 0.1em; }
+    .exhibit { border: 1px solid #2a2010; padding: 20px; margin: 20px 0; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+    .exhibit:hover { background: #1e1810; }
+    .exhibit h3 { font-family: 'Cinzel', serif; color: #c49a42; margin: 0 0 8px; }
+    .exhibit p { margin: 0; font-style: italic; font-size: 1.05rem; }
+    .exhibit-num { font-size: 0.75rem; color: #555; letter-spacing: 0.15em; }
+    footer { text-align: center; font-size: 0.85rem; color: #444; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="museum">
+    <h1>Museum of Curiosities</h1>
+    <p style="text-align:center; color:#777; font-style:italic">Each exhibit holds a piece of the final inscription. Inspect the exhibits closely.</p>
+
+    <div class="exhibit" data-fragment="AMBER" data-order="1">
+      <div class="exhibit-num">EXHIBIT 001</div>
+      <h3>The Fossilised Wing</h3>
+      <p>A perfectly preserved insect wing, encased in ancient resin. Scientists estimate it is 40 million years old.</p>
+    </div>
+
+    <div class="exhibit" data-fragment="STONE" data-order="2">
+      <div class="exhibit-num">EXHIBIT 002</div>
+      <h3>The Speaking Rock</h3>
+      <p>Visitors report hearing whispers when they hold this peculiar grey stone. The museum cannot explain the phenomenon.</p>
+    </div>
+
+    <div class="exhibit" data-fragment="GATE" data-order="3">
+      <div class="exhibit-num">EXHIBIT 003</div>
+      <h3>The Arch of Passage</h3>
+      <p>A miniature iron archway said to have stood at the entrance of a vanished city. What it guarded remains unknown.</p>
+    </div>
+
+    <!-- The key is formed by reading the data-fragment attributes in data-order sequence -->
+    <!-- AMBERSTONE + GATE = AMBERSTONEGATE -->
+
+    <footer>Curated by the Order of the Hidden Inscription</footer>
+  </div>
+</body>
+</html>

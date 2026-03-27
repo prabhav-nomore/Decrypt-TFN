@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML Inspect Puzzles — Mission Hub</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&display=swap');
+
+    :root {
+      --bg: #08090d;
+      --surface: #0f1117;
+      --border: #1e2130;
+      --accent: #7c6cfc;
+      --accent2: #fc6ca0;
+      --text: #c8cde0;
+      --muted: #4a4f6a;
+      --gold: #f0c060;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      padding: 60px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 60px;
+    }
+
+    .hero-tag {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin: 36px 0 0;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: 'Syne Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.2s;
+      cursor: default;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 12px;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(124,108,252,0.08), transparent 60%);
+    }
+
+    .card:hover { border-color: #2e3250; transform: translateY(-2px); }
+    .card:hover::before { opacity: 1; }
+
+    .card-num {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      margin-bottom: 16px;
+    }
+
+    .card-icon { font-size: 2.2rem; margin-bottom: 14px; }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+
+    .technique {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(124,108,252,0.1);
+      border: 1px solid rgba(124,108,252,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    .diff {
+      display: flex;
+      gap: 4px;
+      margin-top: auto;
+    }
+
+    .diff-pip {
+      width: 28px; height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+    }
+
+    .diff-pip.active { background: var(--accent2); }
+
+    .diff-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: 8px;
+      align-self: center;
+      font-family: 'Syne Mono', monospace;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    .open-btn {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      border: 1px solid rgba(124,108,252,0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .open-btn:hover { background: rgba(124,108,252,0.15); }
+
+    .difficulty-badges { display: flex; flex-direction: column; gap: 4px; }
+
+    footer {
+      text-align: center;
+      margin-top: 70px;
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .divider {
+      max-width: 1060px;
+      margin: 0 auto 40px;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-title {
+      max-width: 1060px;
+      margin: 0 auto 24px;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: 'Syne Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-tag">// HTML Inspect Elements Series</div>
+    <h1>10 Hidden<br>Puzzles</h1>
+    <p>Each puzzle hides a secret key inside its HTML source. Open DevTools, view the source, and dig into the markup — the answers are hiding in plain sight.</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Puzzles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Techniques</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Difficulty Levels</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title">// Puzzle Collection</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-num">PUZZLE 01</div>
+      <div class="card-icon">🗺️</div>
+      <h2>The Lost Expedition</h2>
+      <p>Three fragments are hidden across the page. Find them all and combine them in the right order to reveal the expedition's lost secret.</p>
+      <div class="technique">📄 HTML Comments + Hidden Div</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip"></div>
+          <div class="diff-pip"></div>
+          <span class="diff-label">BEGINNER</span>
+        </div>
+        <a class="open-btn" href="puzzle1/puzzle1.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 02</div>
+      <div class="card-icon">🎨</div>
+      <h2>The Art Gallery</h2>
+      <p>A painting is signed only by a colour. The visible canvas tells you nothing. The CSS stylesheet holds the painter's true signature.</p>
+      <div class="technique">🎨 CSS Variable + Invisible Span</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip"></div>
+          <div class="diff-pip"></div>
+          <span class="diff-label">BEGINNER</span>
+        </div>
+        <a class="open-btn" href="puzzle2/puzzle2.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 03</div>
+      <div class="card-icon">🌤️</div>
+      <h2>Daily Weather Report</h2>
+      <p>A perfectly ordinary weather report. Nothing unusual here — or so the body claims. The head of this document tells a different story.</p>
+      <div class="technique">🔖 Meta Tags (Head Section)</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip"></div>
+          <div class="diff-pip"></div>
+          <span class="diff-label">BEGINNER</span>
+        </div>
+        <a class="open-btn" href="puzzle3/puzzle3.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 04</div>
+      <div class="card-icon">🏛️</div>
+      <h2>Museum of Curiosities</h2>
+      <p>Three exhibits, three fragments. Each HTML element carries an invisible inscription. Read them in sequence to form the final key.</p>
+      <div class="technique">📦 data-* Attributes</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip"></div>
+          <span class="diff-label">INTERMEDIATE</span>
+        </div>
+        <a class="open-btn" href="puzzle4/puzzle4.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 05</div>
+      <div class="card-icon">🔐</div>
+      <h2>The Login Vault</h2>
+      <p>A secure login form blocks your access. The button denies you. But forms have hidden fields — and one of them holds the bypass token.</p>
+      <div class="technique">🙈 Hidden Input Fields</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip"></div>
+          <span class="diff-label">INTERMEDIATE</span>
+        </div>
+        <a class="open-btn" href="puzzle5/puzzle5.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 06</div>
+      <div class="card-icon">🖌️</div>
+      <h2>The Painter's Studio</h2>
+      <p>Five colour swatches on a palette. Four are labelled. The fifth is mysterious. Its identity is encoded in the element — just not visibly.</p>
+      <div class="technique">🏷️ data-pigment Attribute</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip"></div>
+          <span class="diff-label">INTERMEDIATE</span>
+        </div>
+        <a class="open-btn" href="puzzle6/puzzle6.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 07</div>
+      <div class="card-icon">🚀</div>
+      <h2>Mission Control</h2>
+      <p>The launch panel is live. The abort code has been redacted from the display. But the JavaScript powering this page didn't redact everything.</p>
+      <div class="technique">⚡ JavaScript Source / Console</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <span class="diff-label">ADVANCED</span>
+        </div>
+        <a class="open-btn" href="puzzle7/puzzle7.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 08</div>
+      <div class="card-icon">📚</div>
+      <h2>The Library Archive</h2>
+      <p>Four books on a shelf. One carries a hidden inscription — readable by screen readers but invisible to the eye. Listen to what the ARIA says.</p>
+      <div class="technique">♿ aria-label Attribute</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <span class="diff-label">ADVANCED</span>
+        </div>
+        <a class="open-btn" href="puzzle8/puzzle8.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 09</div>
+      <div class="card-icon">🏺</div>
+      <h2>The Antique Shop</h2>
+      <p>Three mysterious items, each with a price tag. Hover to reveal their secrets — or inspect the tooltip attributes to crack the safe combination.</p>
+      <div class="technique">💬 title="" Tooltip Attribute</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <span class="diff-label">ADVANCED</span>
+        </div>
+        <a class="open-btn" href="puzzle9/puzzle9.html">OPEN →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-num">PUZZLE 10</div>
+      <div class="card-icon">📡</div>
+      <h2>The Radio Tower</h2>
+      <p>An operator callsign has been redacted from the live display. It appears three times in the document — but not in the body. Look at the document's own structure.</p>
+      <div class="technique">🔍 HTML Tag / Title / Comments</div>
+      <div class="card-footer">
+        <div class="diff">
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <div class="diff-pip active"></div>
+          <span class="diff-label">ADVANCED</span>
+        </div>
+        <a class="open-btn" href="puzzle10/puzzle10.html">OPEN →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Open each puzzle in a browser · Right-click → Inspect · Verify with verifierN.py</p>
+  </footer>
+
+  <script>
+    // Mouse-tracked glow effect on cards
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+        const y = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+        card.style.setProperty('--mx', x + '%');
+        card.style.setProperty('--my', y + '%');
+      });
+    });
+  </script>
+</body>
+</html>

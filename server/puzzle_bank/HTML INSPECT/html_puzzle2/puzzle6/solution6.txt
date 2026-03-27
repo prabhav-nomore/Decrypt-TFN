@@ -1,0 +1,16 @@
+PUZZLE 6 — The Painter's Studio
+=================================
+HIDDENKEY: VERMILION
+
+Where to find it:
+  The fifth colour swatch div has a custom data attribute:
+    <div class="swatch" id="sw5" title="???" data-pigment="VERMILION"></div>
+
+  In DevTools → Elements, click on the fifth swatch (#sw5) and read data-pigment.
+  In View Page Source, search for "data-pigment".
+
+  Also hinted in CSS comment:
+    /* The answer is the name of the rarest pigment in the studio */
+
+Technique: data-* attribute on a styled div element
+Difficulty: Intermediate

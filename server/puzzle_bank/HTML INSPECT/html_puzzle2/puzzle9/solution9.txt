@@ -1,0 +1,20 @@
+PUZZLE 9 — The Antique Shop
+=============================
+HIDDENKEY: OBSIDIAN
+
+Where to find it:
+  The second item's TAG element has a title attribute containing the code:
+    <div class="tag" title="Ref: SK-0032. SAFE_CODE: OBSIDIAN">TAG</div>
+
+  Method 1 — Hover: Hover your mouse over the TAG label on the Skeleton Key item
+             to see the browser's native tooltip.
+  Method 2 — DevTools: Click the .tag element on the second item and read title="".
+  Method 3 — Page Source: Search for "SAFE_CODE" in the source.
+
+  Note: The other two tags have normal reference text in their title attributes.
+
+  Also hinted in the page's HTML comment:
+    <!-- The shop's safe combination is: OBSIDIAN -->
+
+Technique: HTML title="" tooltip attribute
+Difficulty: Advanced

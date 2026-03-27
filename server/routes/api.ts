@@ -79,21 +79,36 @@ router.post('/team/violation', async (req, res) => {
   const team = db.teams.find(t => t.team_id === teamId);
   
   if (team) {
-    team.is_banned = true;
+    team.violation_count = (team.violation_count || 0) + 1;
+    const isBanned = team.violation_count >= 3;
+    
+    if (isBanned) {
+      team.is_banned = true;
+    }
+
     if (supabase) {
-      await supabase.from('teams').update({ is_banned: true }).eq('team_id', teamId);
+      await supabase.from('teams').update({ 
+        violation_count: team.violation_count,
+        is_banned: team.is_banned 
+      }).eq('team_id', teamId);
     } else {
       await writeDB(db);
     }
 
     notifyAdmin('new_event', {
       id: Date.now().toString(),
-      type: 'error',
-      message: `SECURITY_ALERT: Team ${teamId} triggered violation [${type}]. Node BANNED.`,
+      type: isBanned ? 'error' : 'warning',
+      message: `SECURITY_ALERT: Team ${teamId} triggered violation [${type}]. Count: ${team.violation_count}/3. ${isBanned ? 'Node BANNED.' : 'Warning issued.'}`,
       timestamp: Date.now()
     });
+
+    return res.json({ 
+      success: true, 
+      isBanned, 
+      violationCount: team.violation_count 
+    });
   }
-  res.json({ success: true });
+  res.json({ success: false, error: 'Team not found' });
 });
 
 router.post('/team/ban', async (req, res) => {
@@ -197,8 +212,12 @@ router.post('/admin/unban', isAdmin, async (req, res) => {
   
   if (team) {
     team.is_banned = false;
+    team.violation_count = 0;
     if (supabase) {
-      await supabase.from('teams').update({ is_banned: false }).eq('team_id', teamId);
+      await supabase.from('teams').update({ 
+        is_banned: false,
+        violation_count: 0
+      }).eq('team_id', teamId);
     } else {
       await writeDB(db);
     }
@@ -315,12 +334,9 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
                 answer = match[1];
               }
             } else if (await fs.pathExists(verifierAutoPath)) {
-               // For maze puzzles, the answer is often the encoded moves or just a placeholder
-               // We'll use a placeholder for now or try to extract correct_moves
                const verifierContent = await fs.readFile(verifierAutoPath, 'utf-8');
                const match = verifierContent.match(/correct_moves\s*=\s*\[([^\]]+)\]/);
                if (match) {
-                 // Convert ['R', 'R'] to R,R
                  answer = match[1].replace(/['"\s]/g, '');
                }
             }
@@ -340,15 +356,17 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
             else if (lowerDir.includes('binary') || lowerDir.includes('bitwise')) type = 'Binary / Bitwise';
             else if (lowerDir.includes('maze')) type = 'Maze / Pathfinding';
             
+            const puzzleId = path.relative(puzzleBankPath, fullPath).replace(/\\/g, '/');
+
             // Detect HTML Inspection
             const indexHtmlPath = path.join(fullPath, 'index.html');
             if (await fs.pathExists(indexHtmlPath)) {
               type = 'HTML Inspection';
-              isolatedUrl = `/puzzles/${entry}/index.html`;
+              isolatedUrl = `/puzzles/${puzzleId}/index.html`;
             }
 
             puzzles.push({
-              puzzle_id: entry,
+              puzzle_id: puzzleId,
               puzzle_text: text,
               correct_answer: answer,
               reference_type: type,
@@ -369,9 +387,21 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
 
     if (supabase) {
       // Clear and re-insert
-      await supabase.from('puzzles').delete().neq('puzzle_id', 'none');
+      const { error: deleteError } = await supabase.from('puzzles').delete().neq('puzzle_id', 'none');
+      if (deleteError) {
+        console.error('Error clearing puzzles:', deleteError);
+        return res.status(500).json({ error: 'Failed to clear existing puzzles', details: deleteError });
+      }
+
       if (puzzles.length > 0) {
-        await supabase.from('puzzles').insert(puzzles);
+        const { error: insertError } = await supabase.from('puzzles').insert(puzzles);
+        if (insertError) {
+          console.error('Error inserting puzzles:', insertError);
+          return res.status(500).json({ 
+            error: 'Failed to insert puzzles. Check if your Supabase schema matches the new fields (isolated_url) and reference_type constraints.', 
+            details: JSON.stringify(insertError, null, 2)
+          });
+        }
       }
     } else {
       await writeDB(db);
@@ -476,6 +506,47 @@ router.get('/team/status', async (req, res) => {
     pausedAt: team?.session_paused_at,
     points: team?.points || 0
   });
+});
+
+router.get('/team/puzzle-files', async (req, res) => {
+  const { puzzleId } = req.query;
+  if (!puzzleId) return res.status(400).json({ error: 'Missing puzzleId' });
+
+  try {
+    const puzzleBankPath = path.join(__dirname, '..', 'puzzle_bank');
+    const targetPath = path.join(puzzleBankPath, puzzleId as string);
+    
+    // Ensure the path is within puzzle_bank to prevent directory traversal
+    if (!targetPath.startsWith(puzzleBankPath)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    if (!await fs.pathExists(targetPath)) {
+      return res.status(404).json({ error: 'Puzzle directory not found' });
+    }
+
+    const entries = await fs.readdir(targetPath);
+    const files = [];
+    for (const entry of entries) {
+      const fullPath = path.join(targetPath, entry);
+      const stat = await fs.stat(fullPath);
+      if (stat.isFile()) {
+        const sensitive = ['solution.txt', 'organizer_solution.txt', 'solutions.txt', 'plaintext.txt'];
+        if (!sensitive.includes(entry.toLowerCase())) {
+          const relativePath = path.relative(puzzleBankPath, fullPath).replace(/\\/g, '/');
+          files.push({
+            name: entry,
+            url: `/puzzles/${relativePath}`,
+            size: stat.size
+          });
+        }
+      }
+    }
+    res.json(files);
+  } catch (err) {
+    console.error('Error listing files:', err);
+    res.status(500).json({ error: 'Failed to list files' });
+  }
 });
 
 router.post('/skip', async (req, res) => {

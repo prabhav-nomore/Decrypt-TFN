@@ -6,9 +6,10 @@ interface ExternalLinksTabProps {
   links: ExternalLink[];
   isInspectPuzzle?: boolean;
   isolatedUrl?: string | null;
+  onOpenLink: (url: string) => void;
 }
 
-export default function ExternalLinksTab({ links, isInspectPuzzle, isolatedUrl }: ExternalLinksTabProps) {
+export default function ExternalLinksTab({ links, isInspectPuzzle, isolatedUrl, onOpenLink }: ExternalLinksTabProps) {
   return (
     <div className="space-y-4">
       {isInspectPuzzle && isolatedUrl && (
@@ -19,6 +20,10 @@ export default function ExternalLinksTab({ links, isInspectPuzzle, isolatedUrl }
               href={isolatedUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenLink(isolatedUrl);
+              }}
               className="px-4 py-1 bg-yellow-500 text-black font-bold rounded text-[10px] uppercase hover:bg-yellow-600 transition-all"
             >
               Open Challenge Page
@@ -40,6 +45,10 @@ export default function ExternalLinksTab({ links, isInspectPuzzle, isolatedUrl }
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              onOpenLink(link.url);
+            }}
             className="p-2 bg-[#050505] border border-[#333] rounded hover:border-[#00ff00] hover:text-[#00ff00] transition-all"
           >
             <ExternalLinkIcon className="w-4 h-4" />

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle 8: The Library Archive</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap');
+    body { margin: 0; background: #f9f5ee; font-family: 'EB Garamond', serif; color: #2c1810; }
+    .library { max-width: 700px; margin: 60px auto; padding: 40px; }
+    h1 { font-family: 'Merriweather', serif; font-size: 2rem; border-bottom: 2px solid #8b6343; padding-bottom: 12px; }
+    .shelf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 30px 0; }
+    .book {
+      background: linear-gradient(to bottom, var(--spine, #8b4513), var(--spine-dark, #5a2d0c));
+      height: 140px;
+      border-radius: 3px 6px 6px 3px;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 8px 4px;
+      box-shadow: 3px 3px 6px rgba(0,0,0,0.3), inset -2px 0 4px rgba(0,0,0,0.2);
+      cursor: default;
+    }
+    .book span { writing-mode: vertical-rl; font-size: 0.7rem; color: rgba(255,255,255,0.7); font-family: 'Merriweather', serif; }
+    p { line-height: 1.9; font-size: 1.05rem; }
+    .catalog { font-family: 'Merriweather', serif; background: #fff; border: 1px solid #c9a87c; padding: 16px 20px; font-size: 0.9rem; line-height: 1.8; }
+  </style>
+</head>
+<body>
+  <div class="library">
+    <h1>The Grand Library Archive</h1>
+    <p>The archivist left behind a shelf of remarkable volumes. Each book has a visible title — but one also carries a secret inscription, hidden in its accessibility label.</p>
+
+    <div class="shelf">
+      <div class="book" style="--spine:#1a3a5c; --spine-dark:#0d1f33" aria-label="Book: The Oceanic Chronicles">
+        <span>The Oceanic Chronicles</span>
+      </div>
+      <div class="book" style="--spine:#3a1a5c; --spine-dark:#1e0d33" aria-label="Book: Dreams of Meridian — SECRET_WORD: SOLSTICE">
+        <span>Dreams of Meridian</span>
+      </div>
+      <div class="book" style="--spine:#1a5c1a; --spine-dark:#0d330d" aria-label="Book: The Forest Canopy">
+        <span>The Forest Canopy</span>
+      </div>
+      <div class="book" style="--spine:#5c3a1a; --spine-dark:#33200d" aria-label="Book: Letters from the Frontier">
+        <span>Letters from the Frontier</span>
+      </div>
+    </div>
+
+    <div class="catalog">
+      <strong>Archivist's Note:</strong><br>
+      "One volume in this collection bears a hidden inscription — readable only by those who look beyond the visible spine. The ARIA of each book speaks its true nature."
+    </div>
+    <!-- Inspect the aria-label attributes of each book div. One has a secret. -->
+  </div>
+</body>
+</html>

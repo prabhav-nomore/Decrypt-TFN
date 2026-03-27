@@ -1,0 +1,18 @@
+PUZZLE 2 — The Art Gallery
+============================
+HIDDENKEY: COBALT
+
+Where to find it:
+  Method 1 — CSS Variable:
+    In the <style> block: :root { --secret-word: "COBALT"; }
+    DevTools → Elements → select :root → Computed / Styles panel
+
+  Method 2 — Invisible span:
+    <span style="opacity:0; font-size:0; user-select:none">ANSWER: COBALT</span>
+    Visible in DevTools Elements panel or View Page Source
+
+  Method 3 — CSS comment:
+    /* The painting is named after a colour. That colour is COBALT. */
+
+Technique: CSS Variables + Zero-opacity hidden span
+Difficulty: Beginner

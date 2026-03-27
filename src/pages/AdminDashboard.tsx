@@ -32,6 +32,7 @@ interface Team {
   session_paused_at?: number | null;
   paused_duration?: number;
   points?: number;
+  violation_count?: number;
 }
 
 interface LiveEvent {
@@ -404,6 +405,7 @@ export default function AdminDashboard() {
                     <th className="px-6 py-4 font-normal">Solved</th>
                     <th className="px-6 py-4 font-normal">Incorrect</th>
                     <th className="px-6 py-4 font-normal">Lifelines</th>
+                    <th className="px-6 py-4 font-normal">Strikes</th>
                     <th className="px-6 py-4 font-normal">Status</th>
                     <th className="px-6 py-4 font-normal text-right">Actions</th>
                   </tr>
@@ -432,6 +434,16 @@ export default function AdminDashboard() {
                             <div 
                               key={i} 
                               className={`w-2 h-2 rounded-full ${i < (team.lifeline_remaining ?? 3) ? 'bg-blue-500' : 'bg-[#222]'}`} 
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-1">
+                          {Array.from({ length: 3 }).map((_, i) => (
+                            <div 
+                              key={i} 
+                              className={`w-2 h-2 rounded-full ${i < (team.violation_count || 0) ? 'bg-red-500' : 'bg-[#222]'}`} 
                             />
                           ))}
                         </div>

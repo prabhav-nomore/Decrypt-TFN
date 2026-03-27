@@ -1,0 +1,15 @@
+PUZZLE 8 — The Library Archive
+================================
+HIDDENKEY: SOLSTICE
+
+Where to find it:
+  The second book div has a special aria-label attribute:
+    <div class="book" ... aria-label="Book: Dreams of Meridian — SECRET_WORD: SOLSTICE">
+
+  The other books have normal aria-labels; only this one contains the secret.
+
+  In DevTools → Elements, click each .book div and check the aria-label attribute.
+  In View Page Source, search for "SECRET_WORD" to locate it immediately.
+
+Technique: HTML aria-label accessibility attribute
+Difficulty: Advanced

@@ -1,0 +1,1 @@
+JavaScript makes the page interactive.
