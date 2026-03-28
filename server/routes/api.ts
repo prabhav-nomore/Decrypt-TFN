@@ -294,8 +294,7 @@ router.post('/admin/team/timer-action', isAdmin, async (req, res) => {
 router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
   try {
     const puzzleBankPath = path.join(__dirname, '..', 'puzzle_bank');
-    const puzzles: any[] = [];
-
+    let puzzles: any[] = [];
     async function scanDir(dir: string) {
       const entries = await fs.readdir(dir);
       for (const entry of entries) {
@@ -317,7 +316,7 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
             text = await fs.readFile(readmeTxtPath, 'utf-8');
           }
 
-          if (text) {
+          if (text && text.length > 50) { // Avoid adding empty or very short placeholder READMEs
             let answer = 'password'; // Default for preview
             
             // Try to find the answer in various files
@@ -344,17 +343,19 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
             let type = 'Mixed / Meta';
             let isolatedUrl = null;
             const lowerDir = entry.toLowerCase();
-            if (lowerDir.includes('cipher') || lowerDir.includes('caesar') || lowerDir.includes('morse')) type = 'Cryptography';
-            else if (lowerDir.includes('steg')) type = 'Steganography';
-            else if (lowerDir.includes('code') || lowerDir.includes('debug')) type = 'Code Debugging';
-            else if (lowerDir.includes('math') || lowerDir.includes('numeric')) type = 'Number Theory';
-            else if (lowerDir.includes('network')) type = 'Networking';
-            else if (lowerDir.includes('logic')) type = 'Logic / Patterns';
-            else if (lowerDir.includes('osint')) type = 'OSINT';
-            else if (lowerDir.includes('forensic')) type = 'Forensics';
-            else if (lowerDir.includes('audio')) type = 'Audio / Spectrogram';
-            else if (lowerDir.includes('binary') || lowerDir.includes('bitwise')) type = 'Binary / Bitwise';
-            else if (lowerDir.includes('maze')) type = 'Maze / Pathfinding';
+            const fullLowerPath = fullPath.toLowerCase();
+            
+            if (fullLowerPath.includes('cipher') || fullLowerPath.includes('caesar') || fullLowerPath.includes('morse')) type = 'Cryptography';
+            else if (fullLowerPath.includes('steg')) type = 'Steganography';
+            else if (fullLowerPath.includes('code') || fullLowerPath.includes('debug')) type = 'Code Debugging';
+            else if (fullLowerPath.includes('math') || fullLowerPath.includes('numeric')) type = 'Number Theory';
+            else if (fullLowerPath.includes('network')) type = 'Networking';
+            else if (fullLowerPath.includes('logic')) type = 'Logic / Patterns';
+            else if (fullLowerPath.includes('osint')) type = 'OSINT';
+            else if (fullLowerPath.includes('forensic')) type = 'Forensics';
+            else if (fullLowerPath.includes('audio')) type = 'Audio / Spectrogram';
+            else if (fullLowerPath.includes('binary') || lowerDir.includes('bitwise')) type = 'Binary / Bitwise';
+            else if (fullLowerPath.includes('maze')) type = 'Maze / Pathfinding';
             
             const puzzleId = path.relative(puzzleBankPath, fullPath).replace(/\\/g, '/');
 
@@ -365,6 +366,8 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
               isolatedUrl = `/puzzles/${puzzleId}/index.html`;
             }
 
+            // Only add if it's likely a real puzzle (has an answer or is a leaf node)
+            // We'll be generous and add it if it has text, but we'll always recurse
             puzzles.push({
               puzzle_id: puzzleId,
               puzzle_text: text,
@@ -372,15 +375,28 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
               reference_type: type,
               isolated_url: isolatedUrl
             });
-          } else {
-            // Recurse if no README found here
-            await scanDir(fullPath);
           }
+          
+          // ALWAYS recurse to find sub-puzzles, even if this folder had a README
+          await scanDir(fullPath);
         }
       }
     }
 
     await scanDir(puzzleBankPath);
+    console.log(`Identified ${puzzles.length} puzzles in puzzle_bank`);
+    
+    // Ensure uniqueness of puzzle_id
+    const uniquePuzzles = [];
+    const seenIds = new Set();
+    for (const p of puzzles) {
+      if (!seenIds.has(p.puzzle_id)) {
+        seenIds.add(p.puzzle_id);
+        uniquePuzzles.push(p);
+      }
+    }
+    puzzles = uniquePuzzles;
+    console.log(`After deduplication: ${puzzles.length} puzzles`);
 
     const db = await readDB();
     db.puzzles = puzzles;
@@ -394,13 +410,18 @@ router.post('/admin/sync-puzzles', isAdmin, async (req, res) => {
       }
 
       if (puzzles.length > 0) {
-        const { error: insertError } = await supabase.from('puzzles').insert(puzzles);
-        if (insertError) {
-          console.error('Error inserting puzzles:', insertError);
-          return res.status(500).json({ 
-            error: 'Failed to insert puzzles. Check if your Supabase schema matches the new fields (isolated_url) and reference_type constraints.', 
-            details: JSON.stringify(insertError, null, 2)
-          });
+        // Insert in chunks of 50 to avoid payload limits
+        const chunkSize = 50;
+        for (let i = 0; i < puzzles.length; i += chunkSize) {
+          const chunk = puzzles.slice(i, i + chunkSize);
+          const { error: insertError } = await supabase.from('puzzles').insert(chunk);
+          if (insertError) {
+            console.error(`Error inserting puzzle chunk ${i / chunkSize}:`, insertError);
+            return res.status(500).json({ 
+              error: `Failed to insert puzzles at chunk ${i / chunkSize}.`, 
+              details: JSON.stringify(insertError, null, 2)
+            });
+          }
         }
       }
     } else {
