@@ -531,8 +531,16 @@ router.get('/team/puzzle-files', async (req, res) => {
       const fullPath = path.join(targetPath, entry);
       const stat = await fs.stat(fullPath);
       if (stat.isFile()) {
-        const sensitive = ['solution.txt', 'organizer_solution.txt', 'solutions.txt', 'plaintext.txt'];
-        if (!sensitive.includes(entry.toLowerCase())) {
+        const lowerEntry = entry.toLowerCase();
+        const isSensitive = 
+          lowerEntry.includes('solution') || 
+          lowerEntry.includes('answer') || 
+          lowerEntry.includes('verifier') || 
+          lowerEntry.includes('organizer') || 
+          lowerEntry.includes('reference') ||
+          lowerEntry.includes('plaintext');
+
+        if (!isSensitive) {
           const relativePath = path.relative(puzzleBankPath, fullPath).replace(/\\/g, '/');
           files.push({
             name: entry,

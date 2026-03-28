@@ -34,7 +34,21 @@ async function startServer() {
   app.use('/api', apiRoutes);
 
   // Serve puzzles directory for HTML inspection
-  app.use('/puzzles', express.static(path.join(__dirname, 'server', 'puzzle_bank')));
+  app.use('/puzzles', (req, res, next) => {
+    const lowerUrl = req.url.toLowerCase();
+    const isSensitive = 
+      lowerUrl.includes('solution') || 
+      lowerUrl.includes('answer') || 
+      lowerUrl.includes('verifier') || 
+      lowerUrl.includes('organizer') || 
+      lowerUrl.includes('reference') ||
+      lowerUrl.includes('plaintext');
+
+    if (isSensitive) {
+      return res.status(403).json({ error: 'Access to internal files is forbidden' });
+    }
+    next();
+  }, express.static(path.join(__dirname, 'server', 'puzzle_bank')));
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {

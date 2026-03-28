@@ -13,7 +13,6 @@ import {
   Hash,
   Send,
   Loader2,
-  Shield,
   SkipForward,
   Zap,
   Edit3,
@@ -62,10 +61,31 @@ export default function TeamDashboard() {
   const [mainTimer, setMainTimer] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const allowTabSwitchRef = useRef(false);
+  const trustedWindows = useRef<Window[]>([]);
+  const isInitialLoad = useRef(true);
+  const violationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Mark initial load as finished after a short delay or first focus
+    const timer = setTimeout(() => {
+      isInitialLoad.current = false;
+    }, 3000);
+
+    const handleFirstFocus = () => {
+      isInitialLoad.current = false;
+      window.removeEventListener('focus', handleFirstFocus);
+    };
+    window.addEventListener('focus', handleFirstFocus);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('focus', handleFirstFocus);
+    };
+  }, []);
 
   useEffect(() => {
     const reportViolation = async (type: string) => {
-      if (isGracePeriod) return; // Ignore violations during grace period
+      if (isGracePeriod || isInitialLoad.current) return;
 
       const payload = JSON.stringify({ teamId, type, token: teamToken });
       
@@ -104,17 +124,65 @@ export default function TeamDashboard() {
       }
     };
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        if (allowTabSwitchRef.current) {
-          // Trusted switch - don't ban
-          return;
-        }
-        reportViolation('tab_switch');
-      } else if (document.visibilityState === 'visible') {
-        // Re-arm when returning
-        allowTabSwitchRef.current = false;
+    const checkViolation = (type: string) => {
+      if (isInitialLoad.current || isGracePeriod || allowTabSwitchRef.current) return;
+
+      // Clear any pending violation check
+      if (violationTimeoutRef.current) {
+        clearTimeout(violationTimeoutRef.current);
       }
+
+      // Give it a moment to see if focus moved to a trusted window or if it's a transient state
+      violationTimeoutRef.current = setTimeout(() => {
+        if (allowTabSwitchRef.current || isGracePeriod) return;
+
+        // Check if the main window still has focus (might have been a temporary blur)
+        if (document.hasFocus()) return;
+
+        // Check if focus moved to a trusted window
+        const isFocusOnTrusted = trustedWindows.current.some(w => {
+          try {
+            // Same-origin check: we can access .document.hasFocus()
+            // Puzzles are served from /puzzles/ which is same-origin
+            return w && !w.closed && w.document.hasFocus();
+          } catch (e) {
+            // If cross-origin (unlikely here), we can't check focus, but we can check if it's still open
+            // We'll assume it's trusted if it's open and we just triggered a switch
+            return w && !w.closed;
+          }
+        });
+
+        if (!isFocusOnTrusted) {
+          reportViolation(type);
+        }
+      }, 300);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        if (violationTimeoutRef.current) {
+          clearTimeout(violationTimeoutRef.current);
+          violationTimeoutRef.current = null;
+        }
+        allowTabSwitchRef.current = false;
+        return;
+      }
+
+      if (document.visibilityState === 'hidden') {
+        checkViolation('tab_switch');
+      }
+    };
+
+    const handleBlur = () => {
+      checkViolation('window_blur');
+    };
+
+    const handleFocus = () => {
+      if (violationTimeoutRef.current) {
+        clearTimeout(violationTimeoutRef.current);
+        violationTimeoutRef.current = null;
+      }
+      allowTabSwitchRef.current = false;
     };
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -125,12 +193,6 @@ export default function TeamDashboard() {
       e.returnValue = '';
     };
 
-    const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        reportViolation('exited_fullscreen');
-      }
-    };
-
     const handleCopyPaste = (e: ClipboardEvent) => {
       if (!isGracePeriod) {
         e.preventDefault();
@@ -139,17 +201,22 @@ export default function TeamDashboard() {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
     window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('copy', handleCopyPaste);
     document.addEventListener('paste', handleCopyPaste);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('copy', handleCopyPaste);
       document.removeEventListener('paste', handleCopyPaste);
+      if (violationTimeoutRef.current) {
+        clearTimeout(violationTimeoutRef.current);
+      }
     };
   }, [teamId, teamToken, logoutTeam, isGracePeriod]);
 
@@ -257,7 +324,10 @@ export default function TeamDashboard() {
 
   const handleOpenTrustedLink = (url: string) => {
     allowTabSwitchRef.current = true;
-    window.open(url, '_blank');
+    const win = window.open(url, '_blank');
+    if (win) {
+      trustedWindows.current.push(win);
+    }
     // Reset after a short delay just in case the switch didn't happen (e.g. popup blocked)
     setTimeout(() => {
       if (document.visibilityState === 'visible') {
@@ -358,12 +428,6 @@ export default function TeamDashboard() {
     }
   };
 
-  const enterFullscreen = () => {
-    document.documentElement.requestFullscreen().catch(err => {
-      console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-    });
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
@@ -386,14 +450,6 @@ export default function TeamDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {!document.fullscreenElement && (
-            <button 
-              onClick={enterFullscreen}
-              className="px-4 py-2 bg-[#00ff00]/10 border border-[#00ff00]/30 rounded text-[10px] uppercase tracking-widest hover:bg-[#00ff00]/20 transition-all"
-            >
-              Enter Secure Mode
-            </button>
-          )}
           <button 
             onClick={logoutTeam}
             className="flex items-center gap-2 text-[#444] hover:text-red-500 transition-colors text-xs uppercase tracking-widest"
@@ -403,26 +459,6 @@ export default function TeamDashboard() {
           </button>
         </div>
       </header>
-
-      {!document.fullscreenElement && (
-        <div className="fixed inset-0 z-50 bg-[#000]/95 flex flex-col items-center justify-center p-8 text-center space-y-8">
-          <div className="w-20 h-20 bg-[#00ff00]/10 rounded-full flex items-center justify-center border border-[#00ff00]/30 animate-pulse">
-            <Shield className="w-10 h-10 text-[#00ff00]" />
-          </div>
-          <div className="space-y-4 max-w-md">
-            <h2 className="text-2xl font-bold uppercase tracking-[0.2em]">Secure Session Required</h2>
-            <p className="text-[#666] text-sm leading-relaxed">
-              To proceed with the test, you must enter secure full-screen mode. Switching tabs, minimizing the browser, or exiting full-screen will result in an immediate and permanent ban.
-            </p>
-          </div>
-          <button 
-            onClick={enterFullscreen}
-            className="px-12 py-4 bg-[#00ff00] text-black font-bold rounded uppercase tracking-widest hover:bg-[#00cc00] transition-all"
-          >
-            Initialize Secure Mode
-          </button>
-        </div>
-      )}
 
       <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content Area */}
@@ -478,8 +514,18 @@ export default function TeamDashboard() {
                       <div className="space-y-3">
                         <h4 className="text-[10px] text-[#444] uppercase tracking-widest font-bold">Associated Files</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {puzzleFiles.map((file) => (
-                            <div key={file.name} className="bg-[#050505] border border-[#222] p-3 rounded flex items-center justify-between group hover:border-[#00ff00]/30 transition-colors">
+                          {puzzleFiles
+                            .filter(file => {
+                              const lower = file.name.toLowerCase();
+                              return !lower.includes('solution') && 
+                                     !lower.includes('answer') && 
+                                     !lower.includes('verifier') && 
+                                     !lower.includes('organizer') && 
+                                     !lower.includes('reference') &&
+                                     !lower.includes('plaintext');
+                            })
+                            .map((file) => (
+                              <div key={file.name} className="bg-[#050505] border border-[#222] p-3 rounded flex items-center justify-between group hover:border-[#00ff00]/30 transition-colors">
                               <div className="flex items-center gap-3 overflow-hidden">
                                 <FileCode className="w-4 h-4 text-[#444] group-hover:text-[#00ff00] shrink-0" />
                                 <span className="text-xs truncate text-[#666] group-hover:text-[#00ff00]">{file.name}</span>
